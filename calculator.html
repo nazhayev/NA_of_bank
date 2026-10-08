@@ -1,648 +1,208 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>P2P Pro — Калькулятор | Нажаев Ахмад</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#080d17">
+<title>P2P Pro — калькулятор и журнал операций</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
-
-  :root {
-    --bg: #05080f;
-    --bg-card: #0d1117;
-    --bg-input: #161b22;
-    --border: #21262d;
-    --text: #e6edf3;
-    --text-2: #8b949e;
-    --text-3: #6e7681;
-    --accent: #58a6ff;
-    --accent-2: #79c0ff;
-    --green: #3fb950;
-    --orange: #d29922;
-    --red: #f85149;
-    --purple: #bc8cff;
-    --gradient: linear-gradient(135deg, #58a6ff, #bc8cff);
-  }
-
-  * { margin:0; padding:0; box-sizing:border-box; }
-
-  body {
-    font-family: 'Inter', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    padding: 16px;
-    font-size: 14px;
-    line-height: 1.5;
-  }
-
-  .wrap { max-width: 640px; margin: 0 auto; }
-
-  /* ===== HEADER WITH BRAND ===== */
-  .header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 20px;
-    padding: 12px 0;
-  }
-
-  .header-brand {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-
-  .header-photo {
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 2px solid transparent;
-    background: var(--gradient);
-    padding: 2px;
-  }
-
-  .header-info {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .header-info .name {
-    font-size: 0.95rem;
-    font-weight: 700;
-    color: var(--text);
-  }
-
-  .header-info .tag {
-    font-size: 0.75rem;
-    color: var(--text-2);
-  }
-
-  .header h1 {
-    font-size: 1.3rem;
-    font-weight: 800;
-    background: var(--gradient);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-
-  .header .badge {
-    padding: 4px 12px;
-    background: rgba(88, 166, 255, 0.1);
-    border: 1px solid rgba(88, 166, 255, 0.2);
-    border-radius: 20px;
-    font-size: 0.75rem;
-    color: var(--accent);
-    font-weight: 500;
-  }
-
-  /* ===== CARD ===== */
-  .card {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 18px;
-    margin-bottom: 14px;
-  }
-
-  .card-title {
-    font-size: 0.95rem;
-    font-weight: 600;
-    margin-bottom: 14px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .card-title .ico {
-    width: 28px; height: 28px;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.9rem;
-  }
-
-  .row { display: flex; gap: 12px; margin-bottom: 12px; }
-  .row .col { flex: 1; }
-
-  .lbl {
-    display: block;
-    font-size: 0.78rem;
-    font-weight: 500;
-    color: var(--text-2);
-    margin-bottom: 5px;
-  }
-
-  .inp {
-    width: 100%;
-    padding: 10px 12px;
-    background: var(--bg-input);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    color: var(--text);
-    font-size: 0.9rem;
-    font-family: 'Inter', sans-serif;
-    outline: none;
-    transition: border-color 0.2s;
-  }
-
-  .inp:focus { border-color: var(--accent); }
-  select.inp { cursor: pointer; appearance: none; }
-
-  .inp-wrap { position: relative; }
-  .inp-suf {
-    position: absolute;
-    right: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--text-3);
-    font-size: 0.8rem;
-    pointer-events: none;
-  }
-  .inp-wrap .inp { padding-right: 40px; }
-
-  .btn {
-    width: 100%;
-    padding: 12px;
-    background: var(--gradient);
-    color: white;
-    border: none;
-    border-radius: 10px;
-    font-size: 0.95rem;
-    font-weight: 600;
-    cursor: pointer;
-    font-family: 'Inter', sans-serif;
-    transition: opacity 0.2s;
-  }
-  .btn:hover { opacity: 0.9; }
-
-  .res-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin-bottom: 14px;
-  }
-
-  .res-box {
-    background: var(--bg-input);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 12px;
-    text-align: center;
-  }
-
-  .res-box .lbl2 {
-    font-size: 0.7rem;
-    color: var(--text-3);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
-
-  .res-box .val {
-    font-size: 1.15rem;
-    font-weight: 700;
-    margin-top: 2px;
-  }
-
-  .res-box .val.green { color: var(--green); }
-  .res-box .val.purple { color: var(--purple); }
-  .res-box .sub { font-size: 0.75rem; color: var(--text-3); margin-top: 2px; }
-
-  .risk-wrap { margin: 14px 0; }
-  .risk-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 6px;
-  }
-  .risk-top span { font-size: 0.85rem; font-weight: 600; }
-
-  .risk-bar {
-    height: 8px;
-    background: var(--border);
-    border-radius: 4px;
-    overflow: hidden;
-  }
-
-  .risk-fill {
-    height: 100%;
-    border-radius: 4px;
-    transition: width 0.4s ease, background 0.4s;
-  }
-
-  .risk-lbls {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.7rem;
-    color: var(--text-3);
-    margin-top: 4px;
-  }
-
-  .tip-box {
-    background: rgba(88, 166, 255, 0.08);
-    border: 1px solid rgba(88, 166, 255, 0.15);
-    border-radius: 10px;
-    padding: 12px 14px;
-    font-size: 0.82rem;
-    color: var(--text-2);
-    line-height: 1.6;
-  }
-  .tip-box strong { color: var(--accent-2); }
-
-  .scheme { display: none; }
-  .scheme.active { display: block; }
-
-  .scheme-head {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 12px 14px;
-    border-radius: 10px;
-    margin-bottom: 12px;
-    font-size: 0.9rem;
-    font-weight: 600;
-  }
-
-  .scheme-head.safe {
-    background: rgba(63, 185, 80, 0.1);
-    border: 1px solid rgba(63, 185, 80, 0.2);
-    color: var(--green);
-  }
-  .scheme-head.warn {
-    background: rgba(210, 153, 34, 0.1);
-    border: 1px solid rgba(210, 153, 34, 0.2);
-    color: var(--orange);
-  }
-  .scheme-head.danger {
-    background: rgba(248, 81, 73, 0.1);
-    border: 1px solid rgba(248, 81, 73, 0.2);
-    color: var(--red);
-  }
-
-  .week-block {
-    background: var(--bg-input);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 14px;
-    margin-bottom: 10px;
-  }
-
-  .week-block .wk-title {
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: var(--accent-2);
-    margin-bottom: 8px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-
-  .week-block .wk-title .dot {
-    width: 8px; height: 8px;
-    border-radius: 50%;
-    background: var(--accent);
-  }
-
-  .week-block ul { list-style: none; }
-  .week-block li {
-    font-size: 0.82rem;
-    color: var(--text-2);
-    padding: 4px 0;
-    padding-left: 18px;
-    position: relative;
-  }
-  .week-block li::before {
-    content: "•";
-    position: absolute;
-    left: 4px;
-    color: var(--text-3);
-  }
-
-  .week-block .wk-limit {
-    display: inline-block;
-    margin-top: 8px;
-    padding: 4px 10px;
-    background: var(--bg-card);
-    border-radius: 6px;
-    font-size: 0.78rem;
-    color: var(--text);
-    font-weight: 500;
-    font-variant-numeric: tabular-nums;
-  }
-
-  .footer {
-    text-align: center;
-    padding: 20px;
-    color: var(--text-3);
-    font-size: 0.75rem;
-  }
-
-  .footer-brand {
-    font-weight: 600;
-    color: var(--text-2);
-  }
-
-  @media (max-width: 480px) {
-    .row { flex-direction: column; gap: 10px; }
-    body { padding: 12px; }
-    .header { flex-direction: column; gap: 10px; align-items: flex-start; }
-    .header h1 { font-size: 1.1rem; }
-  }
+:root{color-scheme:dark;--bg:#080d17;--panel:#101827;--panel2:#141f31;--line:#27354a;--text:#edf3fb;--muted:#9baec5;--blue:#68a9ff;--cyan:#72e0d1;--green:#4dd39a;--red:#ff8585;--shadow:0 20px 50px rgba(0,0,0,.25);*{box-sizing:border-box}body{margin:0;background:radial-gradient(900px 600px at 15% -10%,#16325a 0,transparent 55%),var(--bg);color:var(--text);font:15px/1.55 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;min-height:100vh;padding:24px}.wrap{max-width:1040px;margin:0 auto}.top{display:flex;justify-content:space-between;align-items:center;gap:16px;margin:8px 0 24px}.brand{display:flex;align-items:center;gap:12px}.brand-mark{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;background:linear-gradient(135deg,#68a9ff,#8a7dff);font-weight:900;color:#07101c}.eyebrow{font-size:.72rem;font-weight:800;letter-spacing:.16em;color:var(--cyan);text-transform:uppercase}.brand-name{font-size:.96rem;font-weight:750}.top-badge{border:1px solid var(--line);border-radius:999px;padding:7px 12px;color:var(--muted);font-size:.8rem}.hero{margin:30px 0 22px}.hero h1{font-size:clamp(2rem,5vw,3.25rem);letter-spacing:-.045em;line-height:1.05;margin:0 0 12px}.hero p{max-width:680px;color:var(--muted);margin:0}.notice{display:flex;gap:12px;align-items:flex-start;border:1px solid #31506a;background:#0d1a2a;padding:14px 16px;border-radius:14px;color:#bfd4eb;font-size:.86rem;margin:18px 0 20px}.notice strong{color:#fff}.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.panel{background:linear-gradient(160deg,rgba(18,29,47,.96),rgba(14,22,36,.97));border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:var(--shadow)}.panel.full{grid-column:1/-1}.panel-head{display:flex;align-items:center;gap:11px;margin-bottom:17px}.icon{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;background:#172a44;color:var(--blue);font-size:1rem}.panel h2{font-size:1.03rem;margin:0;letter-spacing:-.01em}.panel-sub{font-size:.82rem;color:var(--muted);margin:-8px 0 16px}.fields{display:grid;grid-template-columns:1fr 1fr;gap:12px}.field label{display:block;color:#bac9da;font-size:.78rem;font-weight:650;margin:0 0 6px}.field input,.field select{width:100%;border:1px solid var(--line);border-radius:10px;background:#0b1321;color:var(--text);padding:11px 12px;font:inherit;outline:none;min-width:0}.field input:focus,.field select:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(104,169,255,.12)}.hint{font-size:.72rem;color:var(--muted);margin-top:5px}.btn{border:0;border-radius:10px;padding:11px 15px;background:linear-gradient(120deg,#68a9ff,#857bff);color:#08101d;font:inherit;font-weight:800;cursor:pointer;transition:transform .15s,filter .15s}.btn:hover{filter:brightness(1.08);transform:translateY(-1px)}.btn.secondary{background:#17273d;color:#d9e7f6;border:1px solid var(--line)}.btn.danger{background:#321e29;color:#ffc0c0;border:1px solid #583342}.actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:15px}.results{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:16px}.stat{background:#0b1321;border:1px solid var(--line);border-radius:12px;padding:13px}.stat-label{color:var(--muted);font-size:.72rem}.stat-value{font-size:1.2rem;font-weight:800;margin-top:4px;font-variant-numeric:tabular-nums}.stat-value.positive{color:var(--green)}.stat-value.negative{color:var(--red)}.formula{margin-top:12px;color:var(--muted);font-size:.76rem}.limit-list{display:grid;gap:10px;margin-top:16px}.limit-item{padding:12px;border:1px solid var(--line);border-radius:12px;background:#0b1321}.limit-top{display:flex;justify-content:space-between;gap:8px;font-size:.78rem;margin-bottom:8px}.limit-top span:first-child{color:var(--muted)}.bar{height:7px;border-radius:8px;background:#202d3f;overflow:hidden}.bar>i{display:block;height:100%;background:linear-gradient(90deg,var(--blue),var(--cyan));border-radius:inherit;width:0}.empty{color:var(--muted);text-align:center;padding:24px 8px;font-size:.86rem}.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:12px;margin-top:15px}table{width:100%;border-collapse:collapse;min-width:680px}th,td{text-align:left;padding:11px 12px;border-bottom:1px solid var(--line);font-size:.8rem}th{color:var(--muted);font-weight:650;background:#0d1624}td{font-variant-numeric:tabular-nums}tr:last-child td{border-bottom:0}.delete-row{border:1px solid #56333a;color:#ffb6b6;background:#281a22;border-radius:8px;padding:5px 8px;cursor:pointer}.summary{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px}.summary span{border:1px solid var(--line);background:#0b1321;border-radius:999px;padding:6px 10px;color:var(--muted);font-size:.76rem}.status{min-height:1.2em;color:var(--cyan);font-size:.78rem;margin-top:10px}.foot{color:#8295ab;text-align:center;font-size:.75rem;padding:22px 0 10px}.foot a{color:#9ccaff}.hidden{display:none!important}@media(max-width:760px){body{padding:15px}.grid{grid-template-columns:1fr}.panel.full{grid-column:auto}.top{align-items:flex-start}.top-badge{font-size:.72rem}.fields{grid-template-columns:1fr 1fr}}@media(max-width:480px){.fields,.results{grid-template-columns:1fr}.panel{padding:16px}.top{flex-direction:column}.hero{margin-top:22px}}
 </style>
 </head>
 <body>
-
 <div class="wrap">
-
-  <!-- HEADER WITH BRAND -->
-  <div class="header">
-    <div class="header-brand">
-      <div class="header-info">
-        <span class="name">Нажаев Ахмад</span>
-        <span class="tag">P2P Арбитражник & Ментор</span>
-      </div>
-    </div>
-    <span class="badge">🔒 Закрытый доступ</span>
-  </div>
-
-  <!-- INPUTS -->
-  <div class="card">
-    <div class="card-title">
-      <div class="ico" style="background:rgba(88,166,255,0.15);">⚙️</div>
-      Параметры фермы
-    </div>
-
-    <div class="row">
-      <div class="col">
-        <label class="lbl">Количество карт</label>
-        <div class="inp-wrap">
-          <input type="number" class="inp" id="cardCount" value="10" min="1" max="100" onchange="buildScheme()">
-          <span class="inp-suf">шт</span>
-        </div>
-      </div>
-      <div class="col">
-        <label class="lbl">Оборот на карту / месяц</label>
-        <div class="inp-wrap">
-          <input type="number" class="inp" id="monthlyPerCard" value="100000" min="1000" step="10000" onchange="buildScheme()">
-          <span class="inp-suf">₽</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col">
-        <label class="lbl">Банк</label>
-        <select class="inp" id="bankSelect" onchange="buildScheme()">
-          <option value="sber">СберБанк</option>
-          <option value="alfa">Альфа-Банк</option>
-          <option value="tinkoff">Т-Банк (Тинькофф)</option>
-          <option value="raiff">Райффайзен</option>
-          <option value="vtb">ВТБ</option>
-          <option value="mts">МТС Банк</option>
-          <option value="gazprom">Газпромбанк</option>
-          <option value="open">Открытие</option>
-        </select>
-      </div>
-      <div class="col">
-        <label class="lbl">Рабочих дней / месяц</label>
-        <div class="inp-wrap">
-          <input type="number" class="inp" id="workDays" value="25" min="1" max="31" onchange="buildScheme()">
-          <span class="inp-suf">дн</span>
-        </div>
-      </div>
-    </div>
-
-    <button class="btn" onclick="buildScheme()">🔄 Сформировать схему</button>
-  </div>
-
-  <!-- RESULTS -->
-  <div class="card" id="resultsCard" style="display:none;">
-    <div class="card-title">
-      <div class="ico" style="background:rgba(63,185,80,0.15);">📊</div>
-      Расчёт оборотов
-    </div>
-
-    <div class="res-grid">
-      <div class="res-box">
-        <div class="lbl2">Всего карт</div>
-        <div class="val purple" id="resTotalCards">10</div>
-      </div>
-      <div class="res-box">
-        <div class="lbl2">Оборот на карту / мес</div>
-        <div class="val" id="resPerCardMonth">100 000 ₽</div>
-      </div>
-      <div class="res-box">
-        <div class="lbl2">Оборот на карту / день</div>
-        <div class="val" id="resPerCardDay">4 000 ₽</div>
-        <div class="sub" id="resPerCardDaySub">при 25 дн</div>
-      </div>
-      <div class="res-box">
-        <div class="lbl2">Общий оборот / мес</div>
-        <div class="val green" id="resTotalMonth">1 000 000 ₽</div>
-      </div>
-    </div>
-
-    <div class="risk-wrap">
-      <div class="risk-top">
-        <span style="color:var(--text-2);">Нагрузка на карту</span>
-        <span id="riskPercentText" style="color:var(--green);">20%</span>
-      </div>
-      <div class="risk-bar">
-        <div class="risk-fill" id="riskBar" style="width:20%; background:var(--green);"></div>
-      </div>
-      <div class="risk-lbls">
-        <span>Безопасно</span>
-        <span>Внимание</span>
-        <span>Опасно</span>
-      </div>
-    </div>
-
-    <div class="tip-box" id="riskTip">
-      <strong>🟢 Безопасный режим.</strong> Нагрузка минимальная — фокус на качественном прогреве.
-    </div>
-  </div>
-
-  <!-- SCHEME -->
-  <div class="card scheme" id="schemeCard">
-    <div class="card-title">
-      <div class="ico" style="background:rgba(210,153,34,0.15);">🔥</div>
-      Уникальная схема прогрева
-    </div>
-
-    <div class="scheme-head" id="schemeHead">
-      🟢 Безопасный режим — рекомендуемый план
-    </div>
-
-    <div id="schemeContent"></div>
-
-    <div class="tip-box" style="margin-top:12px;" id="schemeTip">
-      <strong>💡 Совет:</strong> Не превышайте указанные лимиты. Резкий скачок = блокировка.
-    </div>
-  </div>
-
-  <div class="footer">
-    © 2026 <span class="footer-brand">Нажаев Ахмад</span>. Все права защищены. Доступ по коду.
-  </div>
-
+<header class="top"><div class="brand"><div class="brand-mark">P2P</div><div><div class="eyebrow">P2P PRO</div><div class="brand-name">Инструменты для расчётов</div></div></div><span class="top-badge">Локальный учёт · без подключения к банку</span></header>
+<section class="hero"><h1>Считайте результат.<br>Ведите учёт прозрачно.</h1><p>Калькулятор чистой прибыли по P2P-сделке, журнал операций и ваши собственные лимиты для планирования.</p></section>
+<div class="notice"><span aria-hidden="true">ⓘ</span><div><strong>Важно:</strong> приложение не оценивает вероятность блокировки и не обещает «безопасные» объёмы. Указанные вами лимиты — только личные ориентиры, а не правила банка или гарантия проверки. Сверяйте условия напрямую с банком и площадкой.</div></div>
+<main class="grid">
+<section class="panel"><div class="panel-head"><div class="icon">↗</div><h2>Калькулятор сделки</h2></div><p class="panel-sub">Оценка результата по введённым ценам и комиссиям.</p>
+<div class="fields">
+<div class="field"><label for="capital">Сумма покупки, ₽</label><input id="capital" type="number" min="0" step="100" value="50000"></div>
+<div class="field"><label for="buyPrice">Цена покупки актива</label><input id="buyPrice" type="number" min="0" step="0.01" value="90"></div>
+<div class="field"><label for="sellPrice">Цена продажи актива</label><input id="sellPrice" type="number" min="0" step="0.01" value="92"></div>
+<div class="field"><label for="buyFee">Комиссия покупки, %</label><input id="buyFee" type="number" min="0" max="100" step="0.01" value="0"></div>
+<div class="field"><label for="sellFee">Комиссия продажи, %</label><input id="sellFee" type="number" min="0" max="100" step="0.01" value="0"></div>
+<div class="field"><label for="otherCosts">Прочие расходы, ₽</label><input id="otherCosts" type="number" min="0" step="1" value="0"></div>
 </div>
-
+<div class="results" aria-live="polite">
+<div class="stat"><div class="stat-label">Расчётный объём актива</div><div class="stat-value" id="assetAmount">—</div></div>
+<div class="stat"><div class="stat-label">Выручка до комиссии</div><div class="stat-value" id="grossRevenue">—</div></div>
+<div class="stat"><div class="stat-label">Общие затраты</div><div class="stat-value" id="totalCosts">—</div></div>
+<div class="stat"><div class="stat-label">Чистый результат · ROI</div><div class="stat-value" id="netProfit">—</div><div class="hint" id="roi">—</div></div>
+</div><p class="formula">Приближение: комиссия покупки считается от суммы покупки, комиссия продажи — от выручки. Сверьте фактическую базу расчёта комиссии на своей площадке.</p>
+</section>
+<section class="panel"><div class="panel-head"><div class="icon">◎</div><h2>Ваши личные лимиты</h2></div><p class="panel-sub">Настройте собственные ориентиры учёта по выбранному банку. Значения не подгружаются от банка автоматически.</p>
+<div class="fields">
+<div class="field" style="grid-column:1/-1"><label for="bankName">Банк или платёжный сервис</label><input id="bankName" list="bankOptions" maxlength="60" placeholder="Выберите или введите название"><datalist id="bankOptions"><option value="Сбербанк"><option value="Альфа-Банк"><option value="Т-Банк"><option value="ВТБ"><option value="Газпромбанк"><option value="МТС Банк"><option value="Райффайзенбанк"><option value="Совкомбанк"><option value="Россельхозбанк"><option value="Банк Санкт-Петербург"><option value="Промсвязьбанк"><option value="Почта Банк"><option value="Уралсиб"><option value="Открытие (исторические записи)"><option value="Ozon Банк"><option value="Яндекс Банк"><option value="Другой"></datalist><div class="hint">Список — только подсказки для журнала; можно вписать любой банк.</div></div>
+<div class="field"><label for="dailyLimit">Личный дневной ориентир, ₽</label><input id="dailyLimit" type="number" min="0" step="1000" placeholder="Не задан"></div>
+<div class="field"><label for="monthlyLimit">Личный месячный ориентир, ₽</label><input id="monthlyLimit" type="number" min="0" step="10000" placeholder="Не задан"></div>
+</div>
+<div class="actions"><button class="btn" id="saveLimits" type="button">Сохранить ориентиры</button></div>
+<div class="limit-list" id="limitUsage"><div class="empty">Введите банк, чтобы увидеть учёт по журналу.</div></div><div class="status" id="limitStatus" role="status"></div>
+</section>
+<section class="panel full"><div class="panel-head"><div class="icon">＋</div><h2>Журнал операций</h2></div><p class="panel-sub">Одна запись — одна сделка/цикл в вашей системе учёта. Храните только необходимые сведения; не вводите номера карт, CVV, пароли или данные контрагентов.</p>
+<div class="fields">
+<div class="field"><label for="tradeDate">Дата</label><input id="tradeDate" type="date"></div>
+<div class="field"><label for="tradeAmount">Сумма для учёта лимита, ₽</label><input id="tradeAmount" type="number" min="0" step="100" value="50000"><div class="hint">Укажите сумму по выбранной вами методике учёта.</div></div>
+<div class="field"><label for="tradeProfit">Чистый результат, ₽</label><input id="tradeProfit" type="number" step="0.01" value="0"></div>
+<div class="field"><label for="tradeNote">Заметка (необязательно)</label><input id="tradeNote" type="text" maxlength="120" placeholder="Например: площадка / номер сделки"></div>
+</div>
+<div class="actions"><button class="btn" id="addTrade" type="button">Добавить запись</button><button class="btn secondary" id="exportCsv" type="button">Экспорт CSV</button><button class="btn danger" id="clearHistory" type="button">Очистить журнал</button></div>
+<div class="summary" id="summary"></div><div class="status" id="ledgerStatus" role="status"></div><div class="table-wrap"><table><thead><tr><th>Дата</th><th>Банк / сервис</th><th>Сумма, ₽</th><th>Чистый результат, ₽</th><th>Заметка</th><th></th></tr></thead><tbody id="tradeRows"></tbody></table><div class="empty" id="emptyLedger">Записей пока нет.</div></div>
+</section>
+</main>
+<footer class="foot">Данные сохраняются только в localStorage этого браузера. Экспортируйте резервную копию самостоятельно. Расчёт ориентировочный; используйте сервисы и счета в соответствии с условиями провайдеров и применимыми правилами.</footer>
+</div>
 <script>
-const banks = {
-  sber: {
-    name: 'СберБанк', limit: 300000, recLimit: 150000, maxTxDay: 10,
-    features: 'Жёсткий мониторинг. Любые резкие скачки = блокировка.',
-    warmMultiplier: 0.5
-  },
-  alfa: {
-    name: 'Альфа-Банк', limit: 250000, recLimit: 120000, maxTxDay: 8,
-    features: 'Плохо переносит крупные суммы. Лучше частые мелкие переводы.',
-    warmMultiplier: 0.6
-  },
-  tinkoff: {
-    name: 'Т-Банк', limit: 200000, recLimit: 100000, maxTxDay: 6,
-    features: 'Хорошо переносит частые переводы. Плохо — крупные суммы.',
-    warmMultiplier: 0.55
-  },
-  raiff: {
-    name: 'Райффайзен', limit: 350000, recLimit: 200000, maxTxDay: 5,
-    features: 'Плохо переносит частые транзакции. Лучше редкие крупные.',
-    warmMultiplier: 0.7
-  },
-  vtb: {
-    name: 'ВТБ', limit: 250000, recLimit: 130000, maxTxDay: 7,
-    features: 'Средний уровень контроля. Баланс между частотой и суммой.',
-    warmMultiplier: 0.6
-  },
-  mts: {
-    name: 'МТС Банк', limit: 200000, recLimit: 100000, maxTxDay: 6,
-    features: 'Мягкий мониторинг. Хорош для новичков.',
-    warmMultiplier: 0.55
-  },
-  gazprom: {
-    name: 'Газпромбанк', limit: 300000, recLimit: 140000, maxTxDay: 8,
-    features: 'Средний уровень контроля. Терпит оба типа операций.',
-    warmMultiplier: 0.6
-  },
-  open: {
-    name: 'Открытие', limit: 200000, recLimit: 100000, maxTxDay: 6,
-    features: 'Мягкий мониторинг. Подходит для старта.',
-    warmMultiplier: 0.55
-  }
-};
-
-function formatNum(n) {
-  return Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+'use strict';
+const TRADES_KEY = 'p2p_pro_trades_v2';
+const LIMITS_KEY = 'p2p_pro_personal_limits_v2';
+const currency = new Intl.NumberFormat('ru-RU', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+const integerCurrency = new Intl.NumberFormat('ru-RU', {maximumFractionDigits: 0});
+let trades = readJson(TRADES_KEY, []);
+let limits = readJson(LIMITS_KEY, {});
+if (!Array.isArray(trades)) trades = [];
+if (!limits || typeof limits !== 'object' || Array.isArray(limits)) limits = {};
+function readJson(key, fallback) { try { const value = localStorage.getItem(key); return value ? JSON.parse(value) : fallback; } catch (error) { return fallback; } }
+function saveJson(key, value) { try { localStorage.setItem(key, JSON.stringify(value)); return true; } catch (error) { return false; } }
+function numberValue(id) { const raw = document.getElementById(id).value.trim().replace(',', '.'); if (!raw) return 0; const n = Number(raw); return Number.isFinite(n) ? n : NaN; }
+function calculateTrade(data) {
+  const principal = Number(data.principal);
+  const buyPrice = Number(data.buyPrice);
+  const sellPrice = Number(data.sellPrice);
+  const buyFeePct = Number(data.buyFeePct);
+  const sellFeePct = Number(data.sellFeePct);
+  const otherCosts = Number(data.otherCosts);
+  if (![principal,buyPrice,sellPrice,buyFeePct,sellFeePct,otherCosts].every(Number.isFinite) || principal <= 0 || buyPrice <= 0 || sellPrice < 0 || buyFeePct < 0 || buyFeePct > 100 || sellFeePct < 0 || sellFeePct > 100 || otherCosts < 0) return null;
+  const assetAmount = principal / buyPrice;
+  const grossRevenue = assetAmount * sellPrice;
+  const buyFeeAmount = principal * buyFeePct / 100;
+  const sellFeeAmount = grossRevenue * sellFeePct / 100;
+  const totalCosts = principal + buyFeeAmount + sellFeeAmount + otherCosts;
+  const netProfit = grossRevenue - sellFeeAmount - principal - buyFeeAmount - otherCosts;
+  const roi = (principal + buyFeeAmount + otherCosts) > 0 ? netProfit / (principal + buyFeeAmount + otherCosts) * 100 : 0;
+  return {assetAmount:assetAmount,grossRevenue:grossRevenue,totalCosts:totalCosts,netProfit:netProfit,roi:roi,buyFeeAmount:buyFeeAmount,sellFeeAmount:sellFeeAmount};
 }
-
-function buildScheme() {
-  const cardCount = parseInt(document.getElementById('cardCount').value) || 1;
-  const monthlyPerCard = parseInt(document.getElementById('monthlyPerCard').value) || 100000;
-  const bankKey = document.getElementById('bankSelect').value;
-  const workDays = parseInt(document.getElementById('workDays').value) || 25;
-
-  const bank = banks[bankKey];
-  const dailyPerCard = monthlyPerCard / workDays;
-  const totalMonthly = monthlyPerCard * cardCount;
-
-  document.getElementById('resultsCard').style.display = 'block';
-  document.getElementById('schemeCard').classList.add('active');
-
-  document.getElementById('resTotalCards').textContent = cardCount;
-  document.getElementById('resPerCardMonth').textContent = formatNum(monthlyPerCard) + ' ₽';
-  document.getElementById('resPerCardDay').textContent = formatNum(dailyPerCard) + ' ₽';
-  document.getElementById('resPerCardDaySub').textContent = 'при ' + workDays + ' дн';
-  document.getElementById('resTotalMonth').textContent = formatNum(totalMonthly) + ' ₽';
-
-  const loadPercent = (dailyPerCard / bank.limit) * 100;
-  const riskBar = document.getElementById('riskBar');
-  const riskText = document.getElementById('riskPercentText');
-  const riskTip = document.getElementById('riskTip');
-  const schemeHead = document.getElementById('schemeHead');
-
-  riskBar.style.width = Math.min(loadPercent, 100) + '%';
-  riskText.textContent = Math.round(loadPercent) + '%';
-
-  let riskColor, schemeClass;
-
-  if (loadPercent < 35) {
-    riskColor = 'var(--green)';
-    schemeClass = 'safe';
-    schemeHead.innerHTML = '🟢 Безопасный режим — ' + bank.name;
-    riskTip.innerHTML = '<strong>🟢 Безопасный режим.</strong> Нагрузка минимальна — фокус на качественном прогреве и бытовых покупках.';
-  } else if (loadPercent < 60) {
-    riskColor = 'var(--orange)';
-    schemeClass = 'warn';
-    schemeHead.innerHTML = '🟡 Повышенная нагрузка — ' + bank.name;
-    riskTip.innerHTML = '<strong>🟡 Внимание.</strong> Нагрузка повышена. Соблюдайте меры маскировки: покупки по QR, остаток на карте, не работайте ночью.';
-  } else {
-    riskColor = 'var(--red)';
-    schemeClass = 'danger';
-    schemeHead.innerHTML = '🔴 Критическая нагрузка — ' + bank.name;
-    riskTip.innerHTML = '<strong>🔴 Опасный режим.</strong> Высокая вероятность блокировки. Увеличьте количество карт или снизьте оборот.';
-  }
-
-  riskBar.style.background = riskColor;
-  riskText.style.color = riskColor;
-  schemeHead.className = 'scheme-head ' + schemeClass;
-
-  const w1Limit = Math.round(dailyPerCard * 0.3 * bank.warmMultiplier);
-  const w2Limit = Math.round(dailyPerCard * 0.6 * bank.warmMultiplier);
-  const w3Limit = Math.round(dailyPerCard * 0.85 * bank.warmMultiplier);
-  const w4Limit = Math.round(dailyPerCard);
-  const txPerHour = loadPercent > 50 ? '1 транзакция в 2 часа' : '1 транзакция в час';
-  const minBalance = Math.round(dailyPerCard * 0.2);
-
-  const bankActions = {
-    sber: ['Оплата ЖКХ через СберБанк Онлайн','Покупки в «Пятёрочке» по QR','Переводы между своими счетами','Пополнение телефона'],
-    alfa: ['Оплата такси через Alfa Pay','Покупки на Wildberries','Переводы друзьям','Оплата подписок'],
-    tinkoff: ['Покупки в «Магните» по QR','Заказы еды через Delivery','Пополнение брокерского счёта','Оплата подписок'],
-    raiff: ['Редкие крупные покупки','Оплата ЖКХ раз в 2 недели','Переводы себе','Покупки в IKEA / Ашан'],
-    vtb: ['Оплата коммунальных услуг','Покупки на Ozon','Переводы родственникам','Оплата такси'],
-    mts: ['Пополнение счёта МТС','Покупки в супермаркетах','Оплата кино','Мелкие переводы друзьям'],
-    gazprom: ['Оплата ЖКХ и интернета','Покупки на маркетплейсах','Переводы между картами','Оплата бензина на АЗС'],
-    open: ['Покупки в «Перекрёстке» по QR','Оплата доставки еды','Пополнение телефона','Мелкие онлайн-покупки']
-  };
-
-  const actions = bankActions[bankKey];
-
-  let extraWeeks = '';
-  if (loadPercent >= 60) {
-    extraWeeks = `<div class="week-block"><div class="wk-title"><span class="dot" style="background:var(--red);"></span>Недели 7–8 — Экстренная подготовка</div><ul><li>Добавьте ещё ${Math.ceil(cardCount * 0.3)} карт для снижения нагрузки</li><li>Снизьте оборот на 30% на 2 недели</li><li>Только бытовые покупки, без P2P</li><li>Подготовьте документы для банка</li></ul><div class="wk-limit">Лимит: ${formatNum(Math.round(w4Limit * 0.7))} ₽/день</div></div>`;
-  }
-
-  const schemeHTML = `
-    <div class="week-block"><div class="wk-title"><span class="dot"></span>Неделя 1 — Медленный старт</div><ul><li>${actions[0]}</li><li>${actions[1]}</li><li>Оплата подписок (200–500 ₽)</li><li>Не более 1 транзакции в 2 часа</li></ul><div class="wk-limit">Лимит: до ${formatNum(w1Limit)} ₽/день</div></div>
-    <div class="week-block"><div class="wk-title"><span class="dot"></span>Недели 2–3 — Наращивание</div><ul><li>${actions[2]}</li><li>${actions[3]}</li><li>Переводы друзьям (500–2000 ₽)</li><li>Покупки на маркетплейсах</li></ul><div class="wk-limit">Лимит: до ${formatNum(w2Limit)} ₽/день</div></div>
-    <div class="week-block"><div class="wk-title"><span class="dot"></span>Недели 4–6 — Рабочий режим</div><ul><li>Первые P2P-сделки (мелкие суммы)</li><li>Постепенный рост до целевого оборота</li><li>${txPerHour}</li><li>Оставляйте минимум ${formatNum(minBalance)} ₽ на карте</li></ul><div class="wk-limit">Лимит: до ${formatNum(w3Limit)} ₽/день</div></div>
-    <div class="week-block"><div class="wk-title"><span class="dot" style="background:var(--green);"></span>Неделя 7+ — Полная загрузка</div><ul><li>Целевой оборот ${formatNum(monthlyPerCard)} ₽/мес</li><li>Не превышайте ${bank.maxTxDay} транзакций/день</li><li>Отдых 1–2 дня в неделю</li><li>Не работайте ночью (00:00–07:00)</li></ul><div class="wk-limit">Лимит: до ${formatNum(w4Limit)} ₽/день</div></div>
-    ${extraWeeks}
-  `;
-
-  document.getElementById('schemeContent').innerHTML = schemeHTML;
-
-  const tipBox = document.getElementById('schemeTip');
-  if (loadPercent >= 60) {
-    tipBox.innerHTML = '<strong>⚠️ Важно:</strong> Блокировка вероятна. Увеличьте карты до ' + Math.ceil(totalMonthly / (bank.recLimit * workDays * 0.5)) + ' шт. или снизьте оборот до ' + formatNum(Math.round(bank.recLimit * 0.5)) + ' ₽/мес.';
-  } else if (loadPercent >= 35) {
-    tipBox.innerHTML = '<strong>💡 Совет:</strong> ' + bank.features + ' Соблюдайте лимит транзакций.';
-  } else {
-    tipBox.innerHTML = '<strong>💡 Совет:</strong> ' + bank.features + ' Нагрузка минимальна.';
-  }
+function formatMoney(n) { return currency.format(Number(n) || 0) + ' ₽'; }
+function formatLocalDate(date) { const y=date.getFullYear(); const m=String(date.getMonth()+1).padStart(2,'0'); const d=String(date.getDate()).padStart(2,'0'); return y+'-'+m+'-'+d; }
+function bankKey(value) { return String(value || '').trim().toLocaleLowerCase('ru-RU'); }
+function renderCalculation() {
+  const result = calculateTrade({principal:numberValue('capital'),buyPrice:numberValue('buyPrice'),sellPrice:numberValue('sellPrice'),buyFeePct:numberValue('buyFee'),sellFeePct:numberValue('sellFee'),otherCosts:numberValue('otherCosts')});
+  const ids = ['assetAmount','grossRevenue','totalCosts','netProfit','roi'];
+  if (!result) { ids.forEach(function(id){document.getElementById(id).textContent = 'Проверьте ввод';}); document.getElementById('netProfit').className = 'stat-value'; return null; }
+  document.getElementById('assetAmount').textContent = result.assetAmount.toLocaleString('ru-RU',{maximumFractionDigits:8});
+  document.getElementById('grossRevenue').textContent = formatMoney(result.grossRevenue);
+  document.getElementById('totalCosts').textContent = formatMoney(result.totalCosts);
+  const profitEl = document.getElementById('netProfit');
+  profitEl.textContent = formatMoney(result.netProfit);
+  profitEl.className = 'stat-value ' + (result.netProfit >= 0 ? 'positive' : 'negative');
+  document.getElementById('roi').textContent = 'ROI: ' + result.roi.toLocaleString('ru-RU',{minimumFractionDigits:2,maximumFractionDigits:2}) + '%';
+  document.getElementById('tradeAmount').value = String(numberValue('capital') || 0);
+  document.getElementById('tradeProfit').value = result.netProfit.toFixed(2);
+  return result;
 }
-
-window.addEventListener('load', () => {
-  const granted = localStorage.getItem('p2p_access_granted');
-  const time = localStorage.getItem('p2p_access_time');
-
-  if (!granted || !time) {
-    window.location.href = 'index.html';
-  }
-
-  buildScheme();
-});
+function parseLimit(value) { if (value === undefined || value === null || value === '') return 0; const number = Number(value); return Number.isFinite(number) && number > 0 ? number : 0; }
+function bankTotals(name, dateValue) {
+  const key = bankKey(name);
+  const day = dateValue || formatLocalDate(new Date());
+  const month = day.slice(0,7);
+  return trades.reduce(function(total, trade) {
+    if (bankKey(trade.bank) !== key) return total;
+    const amount = Number(trade.amount) || 0;
+    if (trade.date === day) total.day += amount;
+    if (String(trade.date || '').slice(0,7) === month) total.month += amount;
+    return total;
+  }, {day:0,month:0});
+}
+function addLimitRow(container, label, used, limit) {
+  const item = document.createElement('div'); item.className = 'limit-item';
+  const top = document.createElement('div'); top.className = 'limit-top';
+  const left = document.createElement('span'); left.textContent = label;
+  const right = document.createElement('strong'); right.textContent = limit > 0 ? formatMoney(used) + ' / ' + formatMoney(limit) : formatMoney(used) + ' · ориентир не задан';
+  top.append(left,right); item.appendChild(top);
+  if (limit > 0) { const bar=document.createElement('div');bar.className='bar';const fill=document.createElement('i');fill.style.width=Math.min(100,Math.max(0,used/limit*100))+'%';bar.appendChild(fill);item.appendChild(bar); }
+  container.appendChild(item);
+}
+function renderLimitUsage() {
+  const bank = document.getElementById('bankName').value.trim();
+  const container = document.getElementById('limitUsage'); container.replaceChildren();
+  if (!bank) { const empty=document.createElement('div');empty.className='empty';empty.textContent='Введите банк, чтобы увидеть учёт по журналу.';container.appendChild(empty);return; }
+  const usage = bankTotals(bank);
+  const config = limits[bankKey(bank)] || {};
+  addLimitRow(container,'Сегодня · '+bank,usage.day,parseLimit(config.daily));
+  addLimitRow(container,'Текущий месяц · '+bank,usage.month,parseLimit(config.monthly));
+}
+function loadBankLimitInputs() {
+  const bank = bankKey(document.getElementById('bankName').value);
+  const config = limits[bank] || {};
+  document.getElementById('dailyLimit').value = config.daily || '';
+  document.getElementById('monthlyLimit').value = config.monthly || '';
+  renderLimitUsage();
+}
+function saveLimitsForBank() {
+  const bank = document.getElementById('bankName').value.trim();
+  const status = document.getElementById('limitStatus');
+  if (!bank) { status.textContent='Введите название банка или сервиса.';return; }
+  const daily = numberValue('dailyLimit'); const monthly = numberValue('monthlyLimit');
+  if (!Number.isFinite(daily) || !Number.isFinite(monthly) || daily < 0 || monthly < 0) { status.textContent='Лимиты должны быть неотрицательными числами.';return; }
+  if (daily === 0 && monthly === 0) delete limits[bankKey(bank)];
+  else limits[bankKey(bank)] = {daily:daily,monthly:monthly,label:bank};
+  status.textContent = saveJson(LIMITS_KEY,limits) ? 'Личные ориентиры сохранены в этом браузере.' : 'Не удалось сохранить данные в браузере.';
+  renderLimitUsage();
+}
+function renderLedger() {
+  const tbody = document.getElementById('tradeRows'); tbody.replaceChildren();
+  const empty = document.getElementById('emptyLedger');
+  const sorted = trades.slice().sort(function(a,b){return String(b.date).localeCompare(String(a.date));});
+  empty.classList.toggle('hidden',sorted.length > 0);
+  sorted.forEach(function(trade) {
+    const row=document.createElement('tr');
+    [trade.date,trade.bank,formatMoney(trade.amount),formatMoney(trade.netProfit),trade.note || '—'].forEach(function(value){const cell=document.createElement('td');cell.textContent=String(value);row.appendChild(cell);});
+    const actionCell=document.createElement('td'); const button=document.createElement('button');button.type='button';button.className='delete-row';button.textContent='Удалить';button.setAttribute('data-trade-id',String(trade.id));actionCell.appendChild(button);row.appendChild(actionCell);tbody.appendChild(row);
+  });
+  const monthPrefix = formatLocalDate(new Date()).slice(0,7);
+  const thisMonth = trades.filter(function(t){return String(t.date || '').slice(0,7) === monthPrefix;});
+  const totalAmount = thisMonth.reduce(function(s,t){return s+(Number(t.amount)||0);},0);
+  const totalProfit = thisMonth.reduce(function(s,t){return s+(Number(t.netProfit)||0);},0);
+  const summary=document.getElementById('summary');summary.replaceChildren();
+  [['Записей за месяц: '+thisMonth.length],['Сумма в журнале: '+formatMoney(totalAmount)],['Чистый результат: '+formatMoney(totalProfit)]].forEach(function(entry){const chip=document.createElement('span');chip.textContent=entry[0];summary.appendChild(chip);});
+  renderLimitUsage();
+}
+function addTrade() {
+  const amount = numberValue('tradeAmount'); const profit = numberValue('tradeProfit');
+  const date = document.getElementById('tradeDate').value || formatLocalDate(new Date());
+  const bank = document.getElementById('bankName').value.trim() || 'Не указан';
+  const note = document.getElementById('tradeNote').value.trim();
+  const status = document.getElementById('ledgerStatus');
+  if (!Number.isFinite(amount) || amount <= 0 || !Number.isFinite(profit)) { status.textContent='Введите положительную сумму и корректный чистый результат.';return; }
+  const record={id:Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8),date:date,bank:bank,amount:amount,netProfit:profit,note:note};
+  trades.push(record);
+  if (!saveJson(TRADES_KEY,trades)) { trades.pop();status.textContent='Не удалось сохранить запись в браузере.';return; }
+  document.getElementById('tradeNote').value='';
+  status.textContent='Запись добавлена.';
+  renderLedger();
+}
+function csvCell(value) { return '"'+String(value === undefined || value === null ? '' : value).replace(/"/g,'""')+'"'; }
+function exportCsv() {
+  if (!trades.length) { document.getElementById('ledgerStatus').textContent='Журнал пуст — экспортировать нечего.';return; }
+  const rows=[['Дата','Банк или сервис','Сумма для учёта, RUB','Чистый результат, RUB','Заметка']];
+  trades.forEach(function(t){rows.push([t.date,t.bank,Number(t.amount)||0,Number(t.netProfit)||0,t.note||'']);});
+  const csv='﻿'+rows.map(function(row){return row.map(csvCell).join(';');}).join('\r\n');
+  const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
+  const link=document.createElement('a');link.href=url;link.download='p2p-journal-'+formatLocalDate(new Date())+'.csv';document.body.appendChild(link);link.click();link.remove();URL.revokeObjectURL(url);
+  document.getElementById('ledgerStatus').textContent='CSV-файл подготовлен.';
+}
+document.querySelectorAll('#capital,#buyPrice,#sellPrice,#buyFee,#sellFee,#otherCosts').forEach(function(input){input.addEventListener('input',renderCalculation);});
+document.getElementById('bankName').addEventListener('change',loadBankLimitInputs);
+document.getElementById('bankName').addEventListener('input',renderLimitUsage);
+document.getElementById('saveLimits').addEventListener('click',saveLimitsForBank);
+document.getElementById('addTrade').addEventListener('click',addTrade);
+document.getElementById('exportCsv').addEventListener('click',exportCsv);
+document.getElementById('clearHistory').addEventListener('click',function(){if(!trades.length)return;if(window.confirm('Удалить все записи журнала из этого браузера?')){trades=[];saveJson(TRADES_KEY,trades);document.getElementById('ledgerStatus').textContent='Журнал очищен.';renderLedger();}});
+document.getElementById('tradeRows').addEventListener('click',function(event){const button=event.target.closest('[data-trade-id]');if(!button)return;trades=trades.filter(function(t){return String(t.id)!==button.getAttribute('data-trade-id');});saveJson(TRADES_KEY,trades);document.getElementById('ledgerStatus').textContent='Запись удалена.';renderLedger();});
+document.getElementById('tradeDate').value=formatLocalDate(new Date());
+renderCalculation();
+renderLedger();
 </script>
-
 </body>
 </html>
